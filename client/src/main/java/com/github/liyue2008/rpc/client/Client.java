@@ -38,7 +38,8 @@ public class Client {
         try(RpcAccessPoint rpcAccessPoint = ServiceSupport.load(RpcAccessPoint.class)) {
             NameService nameService = rpcAccessPoint.getNameService(file.toURI());
             assert nameService != null;
-            //向注册中心查询serviceName的服务地址
+            //uri： rpc://localhost:9999
+            //客户端step1：利用注册中心服务 NameService，向注册中心查询serviceName的服务地址
             URI uri = nameService.lookupService(serviceName);
             assert uri != null;
             logger.info("找到服务{}，提供者: {}.", serviceName, uri);
@@ -48,6 +49,7 @@ public class Client {
              * 它实际上是由 RPC 框架提供的一个代理类的实例。这个代理类有一个专属的名称，叫“桩（Stub）
              */
             //获得远程服务的本地实例,即“桩”，桩是 RPC 框架在客户端的服务代理
+            //客户端step2：利用RPC 框架提供的服务 RpcAccessPoint，获得远程服务的本地实例
             HelloService helloService = rpcAccessPoint.getRemoteService(uri, HelloService.class);
             logger.info("请求服务, name: {}...", name);
             String response = helloService.hello(name);

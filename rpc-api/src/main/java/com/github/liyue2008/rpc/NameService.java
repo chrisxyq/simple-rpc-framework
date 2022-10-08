@@ -36,6 +36,7 @@ public interface NameService {
      */
     void connect(URI nameServiceUri);
     /**
+     * 供服务端使用
      * 注册服务
      * @param serviceName 服务名称
      * @param uri 服务地址
@@ -43,6 +44,7 @@ public interface NameService {
     void registerService(String serviceName, URI uri) throws IOException;
 
     /**
+     * 供客户端使用
      * 向注册中心查询serviceName的服务地址
      * @param serviceName 服务名称
      * @return 服务地址

@@ -67,6 +67,7 @@ public interface RpcAccessPoint extends Closeable{
          */
         Collection<NameService> nameServices = ServiceSupport.loadAll(NameService.class);
         for (NameService nameService : nameServices) {
+            //nameService.supportedSchemes(): "file"
             if(nameService.supportedSchemes().contains(nameServiceUri.getScheme())) {
                 nameService.connect(nameServiceUri);
                 return nameService;

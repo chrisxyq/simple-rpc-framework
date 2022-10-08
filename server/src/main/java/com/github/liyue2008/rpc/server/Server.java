@@ -40,13 +40,17 @@ public class Server {
         try(RpcAccessPoint rpcAccessPoint = ServiceSupport.load(RpcAccessPoint.class);
             //把 RPC 框架对外提供的所有服务定义在一个接口 RpcAccessPoint 中
             Closeable ignored = rpcAccessPoint.startServer()) {
+            //file.toURI(): file:/D:/Users/yuanqixu/AppData/Local/Temp/simple_rpc_name_service.data
             NameService nameService = rpcAccessPoint.getNameService(file.toURI());
             assert nameService != null;
+            //serviceName: com.github.liyue2008.rpc.hello.HelloService
             logger.info("向RpcAccessPoint注册{}服务...", serviceName);
-            //注册 helloService 服务
+            //服务端step1：利用RPC 框架提供的服务 RpcAccessPoint，注册 helloService 服务 得到服务的地址uri: rpc://localhost:9999
             URI uri = rpcAccessPoint.addServiceProvider(helloService, HelloService.class);
             logger.info("服务名: {}, 向NameService注册...", serviceName);
-            //在注册中心注册服务的地址。
+            //服务端step2：利用注册中心服务 NameService，在注册中心注册服务的地址。
+            //serviceName: com.github.liyue2008.rpc.hello.HelloService
+            //uri: rpc://localhost:9999
             nameService.registerService(serviceName, uri);
             logger.info("开始提供服务，按任何键退出.");
             //noinspection ResultOfMethodCallIgnored
