@@ -20,12 +20,16 @@ package com.github.liyue2008.rpc.transport.command;
 public class Header {
     /**
      * 用于唯一标识一个请求命令
+     * requestId 可以用于请求和响应的配对儿
      */
     private int requestId;
     /**
      * 标识收到的这条数据使用的是哪个版本的协议
      */
     private int version;
+    /**
+     * 为了能让接收命令一方来识别收到的是什么命令，以便路由到对应的处理类中去
+     */
     private int type;
 
     public Header() {}

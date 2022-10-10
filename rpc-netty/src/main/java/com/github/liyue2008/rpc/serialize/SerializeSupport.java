@@ -23,6 +23,8 @@ import java.util.Map;
 /**
  * @author LiYue
  * Date: 2019/9/20
+ * SerializeSupport 这个支持任何对象类型序列化的通用静态类。
+ * 首先我们定义两个 Map，这两个 Map 中存放着所有实现 Serializer 接口的序列化实现类。
  */
 @SuppressWarnings("unchecked")
 public class SerializeSupport {

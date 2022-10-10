@@ -13,6 +13,10 @@ package com.github.liyue2008.rpc.serialize;
  * limitations under the License.
  */
 
+/**
+ * 给所有序列化的实现类定义一个 Serializer 接口，所有的序列化实现类都实现这个接口
+ * @param <T>
+ */
 public interface Serializer<T> {
     /**
      * 计算对象序列化后的长度，主要用于申请存放序列化数据的字节数组

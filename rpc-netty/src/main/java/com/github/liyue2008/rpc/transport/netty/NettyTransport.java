@@ -28,6 +28,9 @@ import java.util.concurrent.CompletableFuture;
  */
 public class NettyTransport implements Transport {
     private final Channel channel;
+    /**
+     * NettyTransport类使用 inFlightRequests 维护在途的所有请求CompletableFuture
+     */
     private final InFlightRequests inFlightRequests;
 
     NettyTransport(Channel channel, InFlightRequests inFlightRequests) {

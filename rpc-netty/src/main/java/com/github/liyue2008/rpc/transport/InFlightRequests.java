@@ -38,6 +38,9 @@ public class InFlightRequests implements Closeable {
      * 这样就可以保证在途请求的数量最多不超过 10 个请求，积压在服务端正在处理或者待处理的请求也不会超过 10 个。
      */
     private final Semaphore semaphore = new Semaphore(10);
+    /**
+     * 用于维护所有的在途请求，key为请求id，value为返回值
+     */
     private final Map<Integer, ResponseFuture> futureMap = new ConcurrentHashMap<>();
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
     private final ScheduledFuture scheduledFuture;
