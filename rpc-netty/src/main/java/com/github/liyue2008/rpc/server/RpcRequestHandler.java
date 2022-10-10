@@ -77,6 +77,12 @@ public class RpcRequestHandler implements RequestHandler, ServiceProviderRegistr
         return ServiceTypes.TYPE_RPC_REQUEST;
     }
 
+    /**
+     * 注册 RPC 服务
+     * @param serviceClass
+     * @param serviceProvider
+     * @param <T>
+     */
     @Override
     public synchronized <T> void addServiceProvider(Class<? extends T> serviceClass, T serviceProvider) {
         serviceProviders.put(serviceClass.getCanonicalName(), serviceProvider);
