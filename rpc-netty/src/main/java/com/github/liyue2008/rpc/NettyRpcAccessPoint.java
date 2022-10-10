@@ -46,6 +46,10 @@ public class NettyRpcAccessPoint implements RpcAccessPoint {
 
     @Override
     public <T> T getRemoteService(URI uri, Class<T> serviceClass) {
+        /**
+         * computeIfAbsent 如果 key 对应的 value 不存在，则使用获取 remappingFunction 重新计算后的值，
+         * 并保存为该 key 的 value，否则返回 value。
+         */
         Transport transport = clientMap.computeIfAbsent(uri, this::createTransport);
         return stubFactory.createStub(transport, serviceClass);
     }

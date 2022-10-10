@@ -29,14 +29,46 @@ import java.util.concurrent.ExecutionException;
  * @author LiYue
  * Date: 2019/9/27
  */
+
+/**
+ * 我们需要动态生成的这个桩，它每个方法的逻辑都是一样的，
+ * 都是把类名、方法名和方法的参数封装成请求，然后发给服务端，
+ * 收到服务端响应之后再把结果作为返回值，返回给调用方。
+ * 所以，我们定义一个 AbstractStub 的抽象类，
+ * 在这个类中实现大部分通用的逻辑，让所有动态生成的桩都继承这个抽象类，这样动态生成桩的代码会更少一些。
+ */
 public abstract class AbstractStub implements ServiceStub {
+    /**
+     *  Transport 这个接口的实现 NettyTransport 类。这个 send 方法的实现，
+     *  本质上就是一个异步方法，在把请求数据发出去之后就返回了，并不会阻塞当前这个线程去等待响应返回来。
+     */
     protected Transport transport;
 
+    /**
+     * 把接口的类名、方法名和序列化后的参数封装成一个 RpcRequest 对象，
+     * 调用父类 AbstractStub 中的 invokeRemote 方法，发送给服务端。
+     * invokeRemote 方法的返回值就是序列化的调用结果，
+     * 我们在模板中把这个结果反序列化之后，直接作为返回值返回给调用方就可以了。
+     * @param request
+     * @return
+     */
     protected byte [] invokeRemote(RpcRequest request) {
+        /**
+         * request: {"interfaceName":"com.github.liyue2008.rpc.hello.HelloService",
+         * "methodName":"hello","serializedArguments":"AE1hc3RlciBNUQ=="}
+         *
+         * header: {"requestId":0,"type":0,"version":1}
+         *
+         * requestCommand:{"header":{"requestId":0,"type":0,"version":1},
+         * "payload":"ZQAAACtjb20uZ2l0aHViLmxpeXVlMjAwOC5ycGMuaGVsbG8uSGVsbG9TZXJ2aWNlAAAABWhlbGxvAAAACgBNYXN0ZXIgTVE="}
+         *
+         * responseCommand: {"header":{"code":0,"error":"","requestId":0,"type":0,"version":1},"payload":"AEhlbGxvLCBNYXN0ZXIgTVE="}
+         */
         Header header = new Header(ServiceTypes.TYPE_RPC_REQUEST, 1, RequestIdSupport.next());
         byte [] payload = SerializeSupport.serialize(request);
         Command requestCommand = new Command(header, payload);
         try {
+            //NettyTransport类实现通信
             Command responseCommand = transport.send(requestCommand).get();
             ResponseHeader responseHeader = (ResponseHeader) responseCommand.getHeader();
             if(responseHeader.getCode() == Code.SUCCESS.getCode()) {

@@ -13,10 +13,20 @@
  */
 package com.github.liyue2008.rpc.client;
 
+import com.github.liyue2008.rpc.NettyRpcAccessPoint;
+import com.github.liyue2008.rpc.RpcAccessPoint;
+import com.github.liyue2008.rpc.transport.InFlightRequests;
 import com.github.liyue2008.rpc.transport.Transport;
+import com.github.liyue2008.rpc.transport.netty.NettyTransport;
 import com.itranswarp.compiler.JavaStringCompiler;
+import io.netty.channel.AbstractChannel;
+import io.netty.channel.Channel;
+import io.netty.channel.embedded.EmbeddedChannel;
+import org.junit.Test;
 
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 
 /**
@@ -46,14 +56,42 @@ public class DynamicStubFactory implements StubFactory{
             "    }\n" +
             "}";
 
+    /**
+     * 根据service的类，动态生成桩的方法
+     * package com.github.liyue2008.rpc.client.stubs;
+     * import com.github.liyue2008.rpc.serialize.SerializeSupport;
+     *
+     * public class HelloServiceStub extends AbstractStub implements com.github.liyue2008.rpc.hello.HelloService {
+     *     @Override
+     *     public String hello(String arg) {
+     *         return SerializeSupport.parse(
+     *                 invokeRemote(
+     *                         new RpcRequest(
+     *                                 "com.github.liyue2008.rpc.hello.HelloService",
+     *                                 "hello",
+     *                                 SerializeSupport.serialize(arg)
+     *                         )
+     *                 )
+     *         );
+     *     }
+     * }
+     * @param transport
+     * @param serviceClass
+     * @param <T>
+     * @return
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <T> T createStub(Transport transport, Class<T> serviceClass) {
         try {
             // 填充模板
+            //HelloServiceStub
             String stubSimpleName = serviceClass.getSimpleName() + "Stub";
+            //com.github.liyue2008.rpc.hello.HelloService
             String classFullName = serviceClass.getName();
+            //com.github.liyue2008.rpc.client.stubs.HelloServiceStub
             String stubFullName = "com.github.liyue2008.rpc.client.stubs." + stubSimpleName;
+            //hello
             String methodName = serviceClass.getMethods()[0].getName();
 
             String source = String.format(STUB_SOURCE_TEMPLATE, stubSimpleName, classFullName, methodName, classFullName, methodName);
@@ -73,4 +111,5 @@ public class DynamicStubFactory implements StubFactory{
             throw new RuntimeException(t);
         }
     }
+
 }
