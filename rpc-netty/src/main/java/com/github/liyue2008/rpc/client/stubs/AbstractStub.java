@@ -49,6 +49,12 @@ public abstract class AbstractStub implements ServiceStub {
      * 调用父类 AbstractStub 中的 invokeRemote 方法，发送给服务端。
      * invokeRemote 方法的返回值就是序列化的调用结果，
      * 我们在模板中把这个结果反序列化之后，直接作为返回值返回给调用方就可以了。
+     *
+     *
+     *     RPC 框架提供统一的泛化调用接口，
+     *      调用端在创建 GenericService 代理时指定真正需要调用的接口的接口名以及分组名，
+     *      通过调用 GenericService 代理的 $invoke 方法将服务端所需要的所有信息，
+     *      包括接口名、业务分组名、方法名以及参数信息等封装成请求消息，发送给服务端，实现在没有接口的情况下进行 RPC 调用的功能
      * @param request
      * @return
      */
@@ -69,6 +75,11 @@ public abstract class AbstractStub implements ServiceStub {
         Command requestCommand = new Command(header, payload);
         try {
             //NettyTransport类实现通信
+            /**
+             * 所谓的同步调用，不过是 RPC 框架在调用端的处理逻辑中主动执行了这个 Future 的 get 方法，
+             * 让动态代理等待返回值；而异步调用则是 RPC 框架没有主动执行这个 Future 的 get 方法，
+             * 用户可以从请求上下文中得到这个 Future，自己决定什么时候执行这个 Future 的 get 方法。
+             */
             Command responseCommand = transport.send(requestCommand).get();
             ResponseHeader responseHeader = (ResponseHeader) responseCommand.getHeader();
             if(responseHeader.getCode() == Code.SUCCESS.getCode()) {

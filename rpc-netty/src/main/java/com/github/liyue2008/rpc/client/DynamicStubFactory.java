@@ -13,20 +13,8 @@
  */
 package com.github.liyue2008.rpc.client;
 
-import com.github.liyue2008.rpc.NettyRpcAccessPoint;
-import com.github.liyue2008.rpc.RpcAccessPoint;
-import com.github.liyue2008.rpc.transport.InFlightRequests;
 import com.github.liyue2008.rpc.transport.Transport;
-import com.github.liyue2008.rpc.transport.netty.NettyTransport;
 import com.itranswarp.compiler.JavaStringCompiler;
-import io.netty.channel.AbstractChannel;
-import io.netty.channel.Channel;
-import io.netty.channel.embedded.EmbeddedChannel;
-import org.junit.Test;
-
-
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Map;
 
 /**
@@ -93,8 +81,28 @@ public class DynamicStubFactory implements StubFactory{
             String stubFullName = "com.github.liyue2008.rpc.client.stubs." + stubSimpleName;
             //hello
             String methodName = serviceClass.getMethods()[0].getName();
-
-            String source = String.format(STUB_SOURCE_TEMPLATE, stubSimpleName, classFullName, methodName, classFullName, methodName);
+            /**
+             * source
+             *             package com.github.liyue2008.rpc.client.stubs;
+             *             import com.github.liyue2008.rpc.serialize.SerializeSupport;
+             *
+             *             public class HelloServiceStub extends AbstractStub implements com.github.liyue2008.rpc.hello.HelloService {
+             *                 @Override
+             *                 public String hello(String arg) {
+             *                     return SerializeSupport.parse(
+             *                             invokeRemote(
+             *                                     new RpcRequest(
+             *                                             "com.github.liyue2008.rpc.hello.HelloService",
+             *                                             "hello",
+             *                                             SerializeSupport.serialize(arg)
+             *                                     )
+             *                             )
+             *                     );
+             *                 }
+             *             }
+             */
+            String source = String.format(STUB_SOURCE_TEMPLATE,
+                    stubSimpleName, classFullName, methodName, classFullName, methodName);
             // 编译源代码
             JavaStringCompiler compiler = new JavaStringCompiler();
             Map<String, byte[]> results = compiler.compile(stubSimpleName + ".java", source);

@@ -108,6 +108,7 @@ public class LocalFileNameService implements NameService {
     @Override
     public URI lookupService(String serviceName) throws IOException {
         Metadata metadata;
+        //D:\Users\yuanqixu\AppData\Local\Temp\simple_rpc_name_service.data
         try(RandomAccessFile raf = new RandomAccessFile(file, "rw");
             FileChannel fileChannel = raf.getChannel()) {
             FileLock lock = fileChannel.lock();

@@ -61,6 +61,9 @@ public class NettyTransport implements Transport {
              * 永远都收不到响应。那为了确保这些孤儿 ResponseFuture 不会在内存中越积越多，
              * 我们必须要捕获所有的异常情况，结束对应的 ResponseFuture。所以，我们在上面代码中，
              * 两个地方都做了异常处理，分别应对发送失败和发送异常两种情况。
+             * RequestInvocation     protected void channelRead0(ChannelHandlerContext channelHandlerContext, Command request) throws Exception {
+             * RpcRequestHandler public Command handle(Command requestCommand) {
+             *
              */
             channel.writeAndFlush(request).addListener((ChannelFutureListener) channelFuture -> {
                 // 处理发送失败的情况

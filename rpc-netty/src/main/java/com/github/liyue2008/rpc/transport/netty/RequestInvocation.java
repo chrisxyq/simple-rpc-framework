@@ -52,6 +52,12 @@ public class RequestInvocation extends SimpleChannelInboundHandler<Command> {
         if(null != handler) {
             Command response = handler.handle(request);
             if(null != response) {
+                /**
+                 * 在服务端的业务逻辑中创建一个返回值 CompletableFuture 对象，
+                 * 之后服务端真正的业务逻辑完全可以在一个线程池中异步处理，
+                 * 业务逻辑完成之后再调用这个 CompletableFuture 对象的 complete 方法，
+                 * 完成异步通知；
+                 */
                 channelHandlerContext.writeAndFlush(response).addListener((ChannelFutureListener) channelFuture -> {
                     if (!channelFuture.isSuccess()) {
                         logger.warn("Write response failed!", channelFuture.cause());

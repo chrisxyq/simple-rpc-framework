@@ -45,7 +45,8 @@ public class InFlightRequests implements Closeable {
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
     private final ScheduledFuture scheduledFuture;
     public InFlightRequests() {
-        scheduledFuture = scheduledExecutorService.scheduleAtFixedRate(this::removeTimeoutFutures, TIMEOUT_SEC, TIMEOUT_SEC, TimeUnit.SECONDS);
+        scheduledFuture = scheduledExecutorService.scheduleAtFixedRate(this::removeTimeoutFutures,
+                TIMEOUT_SEC, TIMEOUT_SEC, TimeUnit.SECONDS);
     }
 
     public void put(ResponseFuture responseFuture) throws InterruptedException, TimeoutException {
